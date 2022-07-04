@@ -1,3 +1,5 @@
+package services;
+
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -8,9 +10,9 @@ import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
-class CircuitBreakerService {
+public class CircuitBreakerService {
 
-    static void circuitBreaker(BackendService backendService) {
+    public static void circuitBreaker(BackendService backendService) {
         // Create a custom configuration for a CircuitBreaker
         CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
                 .failureRateThreshold(50)
