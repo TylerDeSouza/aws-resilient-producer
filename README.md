@@ -24,7 +24,7 @@ Exercise to practice creation of a Kafka producer within AWS
 
 ----
 
-### Exercise - Produce and consume a message locally
+### Exercise 1 - Produce and consume a message locally
 
 The following instructions will show you how to produce and consume a message locally.
 
@@ -53,9 +53,17 @@ our broker/server, one for our producer, and one for our consumer.</mark>
 **5. Read events from topics - Perform in Terminal 4**
 
 - ``kafka-console-consumer --topic test --from-beginning --bootstrap-server localhost:9092``
-- <mark style="background: #C5F4E0">--from-beginning</mark>
+- <mark style="background: #C5F4E0">--from-beginning</mark> **this flag will result in all messages in the topic to be
+  consumed. Use this flag with caution to avoid unintended message volume to be consumed**
 
 **6. When completed, shutdown each terminal using ``Ctrl+C``**
+
+---
+
+### Exercise 2 - Setting up Kafka Cluster, handling Broker failover and Consumer failover
+
+In this exercise, we will move from 1 server/broker handling all messages to several brokers handling messages and
+responding to broker failover as well as consumer failover.
 
 ---
 
