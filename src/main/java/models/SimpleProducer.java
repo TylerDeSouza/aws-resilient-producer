@@ -19,13 +19,13 @@ public class SimpleProducer {
     public SimpleProducer() {
 
         //Assign topicName to string variable
-        topicName = "test";
+        topicName = System.getenv().getOrDefault("TOPIC_NAME", "test_topic");
 
         // create instance for properties to access producer configs
         props = new Properties();
 
         //Assign localhost id
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092"));
 
         //Set acknowledgements for producer requests.
         props.put("acks", "all");

@@ -27,7 +27,7 @@ public class CircuitBreakerService {
                 CircuitBreakerRegistry.of(circuitBreakerConfig);
 
         CircuitBreaker circuitBreaker = circuitBreakerRegistry
-                .circuitBreaker("name");
+                .circuitBreaker("kafkaCircuitBreaker");
 
         String result = circuitBreaker
                 .executeSupplier(backendService::doSomething);
