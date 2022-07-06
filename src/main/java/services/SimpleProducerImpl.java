@@ -4,11 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 
 import java.util.Properties;
-import java.util.concurrent.Future;
-import java.util.function.Supplier;
 
 @Slf4j
 public class SimpleProducerImpl implements SimpleProducer {
@@ -74,9 +71,7 @@ public class SimpleProducerImpl implements SimpleProducer {
     public void send(String key, String value) {
         for (int i = 0; i < 10; i++) {
             log.info("Sending message with key-value pair {}:{} to topic {}", key, value, topicName);
-            int finalI = i;
-            Supplier<Future<RecordMetadata>> supplier = () -> producer.send(new ProducerRecord<>(topicName, key, finalI + "-" + value));
-            CircuitBreakerService.circuitBreaker.executeSupplier(supplier);
+            producer.send(new ProducerRecord<>(topicName, key, i + "-" + value));
         }
     }
 

@@ -6,10 +6,9 @@ import services.SimpleProducerImpl;
 public class RequestHandlerImpl implements RequestHandler<String, Response> {
     private final SimpleProducerImpl simpleProducerImpl;
 
-    public RequestHandlerImpl(SimpleProducerImpl simpleProducerImpl) {
-        this.simpleProducerImpl = simpleProducerImpl;
+    public RequestHandlerImpl() {
+        this.simpleProducerImpl = new SimpleProducerImpl();
     }
-
 
     @Override
     public Response handleRequest(String s, Context context) {
