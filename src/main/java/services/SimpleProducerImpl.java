@@ -1,20 +1,27 @@
-package models;
+package services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 
 import java.util.Properties;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 @Slf4j
-public class SimpleProducer {
+public class SimpleProducerImpl implements SimpleProducer {
     public static Producer<String, String> producer;
     public static Properties props;
     public static String topicName;
 
-    //TODO: Create environment variables
-    public SimpleProducer() {
+    public SimpleProducerImpl() {
+        //TODO: Store these in AWS secret manager and retrieve from there instead of env variable
+        String username = System.getenv().getOrDefault("USERNAME", "username");
+        String password = System.getenv().getOrDefault("PASSWORD", "password");
+        String srApiKey = System.getenv().getOrDefault("SR_API_KEY", "SR_API_KEY");
+        String srApiSecret = System.getenv().getOrDefault("SR_API_SECRET", "SR_API_SECRET");
 
         //Assign topicName to string variable
         topicName = System.getenv().getOrDefault("TOPIC_NAME", "test_topic");
@@ -50,7 +57,7 @@ public class SimpleProducer {
 
         props.put("sasl.mechanism", "PLAIN");
 
-        props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", System.getenv().getOrDefault("USERNAME", "username"), System.getenv().getOrDefault("PASSWORD", "password")));
+        props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", username, password));
 
         props.put("security.protocol", "SASL_SSL");
 
@@ -58,19 +65,19 @@ public class SimpleProducer {
 
         props.put("basic.auth.credentials.source", "USER_INFO");
 
-        props.put("basic.auth.user.info", String.format("%s:%s", System.getenv().getOrDefault("SR_API_KEY", "SR_API_KEY"), System.getenv().getOrDefault("SR_API_SECRET", "SR_API_SECRET")));
+        props.put("basic.auth.user.info", String.format("%s:%s", srApiKey, srApiSecret));
 
         producer = new KafkaProducer<>(props);
 
     }
 
-    //TODO: Work on sending Key-Value Pairs, then headers
-    public void send() {
+    public void send(String key, String value) {
         for (int i = 0; i < 10; i++) {
-            producer.send(new ProducerRecord<>(topicName, Integer.toString(i), Integer.toString(i)));
+            log.info("Sending message with key-value pair {}:{} to topic {}", key, value, topicName);
+            int finalI = i;
+            Supplier<Future<RecordMetadata>> supplier = () -> producer.send(new ProducerRecord<>(topicName, key, finalI + "-" + value));
+            CircuitBreakerService.circuitBreaker.executeSupplier(supplier);
         }
-        log.info("Message sent successfully");
-        producer.close();
     }
 
 }

@@ -1,18 +1,19 @@
-import lambda.RequestHandler;
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
 import models.Response;
-import models.SimpleProducer;
-import services.BackendService;
-import services.CircuitBreakerService;
+import services.SimpleProducerImpl;
 
-public class RequestHandlerImpl implements RequestHandler {
+public class RequestHandlerImpl implements RequestHandler<String, Response> {
+    private final SimpleProducerImpl simpleProducerImpl;
+
+    public RequestHandlerImpl(SimpleProducerImpl simpleProducerImpl) {
+        this.simpleProducerImpl = simpleProducerImpl;
+    }
+
 
     @Override
-    public Response handleRequest() {
-        String message = "Hello from Lambda!";
-        BackendService backendService = new BackendService();
-        CircuitBreakerService.circuitBreaker(backendService);
-        SimpleProducer simpleProducer = new SimpleProducer();
-        simpleProducer.send();
-        return new Response(message, 200);
+    public Response handleRequest(String s, Context context) {
+        simpleProducerImpl.send(s, s);
+        return new Response("Request completed", 200);
     }
 }
